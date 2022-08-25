@@ -23,6 +23,7 @@
             android:layout_height="@dimen/home_recycler_item_img_size"
             android:layout_margin="@dimen/home_recycler_item_inner_margins"
             app:imageUrl="@{item.thumbnailUrl}"
+            app:loadFromCacheOnly="@{item.createdFromCache}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>

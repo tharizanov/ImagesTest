@@ -23,8 +23,8 @@ fun setHomeRecyclerItems(view: RecyclerView, items: List<HomeRecyclerItem>?) {
     (view.adapter as? HomeRecyclerAdapter)?.setItems(items)
 }
 
-@BindingAdapter("imageUrl", "placeholderId", requireAll = false)
-fun setImageViewContent(view: ImageView, imageUrl: String?, @DrawableRes placeholderId: Int?) {
+@BindingAdapter("imageUrl", "placeholderId", "loadFromCacheOnly", requireAll = false)
+fun setImageViewContent(view: ImageView, imageUrl: String?, @DrawableRes placeholderId: Int?, loadFromCacheOnly: Boolean?) {
     if (imageUrl.isNullOrEmpty()) {
         view.setImageResource(placeholderId ?: R.drawable.ic_launcher_background)
         return
@@ -34,12 +34,13 @@ fun setImageViewContent(view: ImageView, imageUrl: String?, @DrawableRes placeho
 
     val requestOptions = RequestOptions()
         .skipMemoryCache(false)
-        .diskCacheStrategy(DiskCacheStrategy.ALL)
+        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
         .override(imageSize, imageSize)
 
     Glide.with(view)
         .load(imageUrl)
         .apply(requestOptions)
+        .onlyRetrieveFromCache(loadFromCacheOnly == true)
         .placeholder(placeholderId ?: R.drawable.ic_launcher_background)
         .into(view)
 }
