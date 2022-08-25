@@ -1,0 +1,78 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    compileSdk build_versions.compile_sdk
+
+    defaultConfig {
+        applicationId "com.example.test2.app"
+        minSdk build_versions.min_sdk
+        targetSdk build_versions.target_sdk
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    dataBinding {
+        enabled = true
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+            shrinkResources false
+        }
+        release {
+            debuggable false
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    api project(":persistance")
+    api project(":repository")
+    api project(":util")
+
+    implementation "androidx.activity:activity-ktx:$dep_versions.androidx.activity"
+    implementation "androidx.appcompat:appcompat:$dep_versions.androidx.appcompat"
+    implementation "androidx.core:core-ktx:$dep_versions.androidx.core"
+    implementation "androidx.fragment:fragment-ktx:$dep_versions.androidx.fragment"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$dep_versions.androidx.lifecycle"
+
+    kapt "com.github.bumptech.glide:compiler:$dep_versions.glide"
+    implementation "com.github.bumptech.glide:glide:$dep_versions.glide"
+
+    implementation "com.google.android.material:material:$dep_versions.material"
+
+    implementation "io.insert-koin:koin-android:$dep_versions.koin"
+    testImplementation "io.insert-koin:koin-test:$dep_versions.koin"
+    testImplementation "io.insert-koin:koin-test-junit4:$dep_versions.koin"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$dep_versions.coroutines"
+
+    testImplementation "junit:junit:$dep_versions.junit"
+    androidTestImplementation "androidx.test.ext:junit:$dep_versions.androidx.junit"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$dep_versions.androidx.espresso"
+}

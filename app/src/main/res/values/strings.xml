@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Images Test</string>
+    <string name="home_search_button">Search images</string>
+    <string name="home_loading_placeholder">LOADING DATA .....</string>
+</resources>

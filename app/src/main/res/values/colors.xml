@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="home_placeholder_textColor">#000</color>
+    <color name="home_recycler_divider">#000</color>
+    <color name="home_recycler_item_textColor">#000</color>
+</resources>

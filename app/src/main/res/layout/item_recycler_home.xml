@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="item"
+            type="com.example.test2.app.domains.HomeRecyclerItem" />
+
+        <variable
+            name="vm"
+            type="com.example.test2.app.ui.fragments.home.HomeVM" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> vm.onItemClick(item)}">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/home_recycler_item_img"
+            android:layout_width="@dimen/home_recycler_item_img_size"
+            android:layout_height="@dimen/home_recycler_item_img_size"
+            android:layout_margin="@dimen/home_recycler_item_inner_margins"
+            app:imageUrl="@{item.thumbnailUrl}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:layout_width="@dimen/no_dimen"
+            android:layout_height="@dimen/no_dimen"
+            android:layout_margin="@dimen/home_recycler_item_inner_margins"
+            android:gravity="center_vertical"
+            android:text="@{item.title}"
+            android:textColor="@color/home_recycler_item_textColor"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/home_recycler_item_img"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

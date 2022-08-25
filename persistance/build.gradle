@@ -1,0 +1,54 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    compileSdk build_versions.compile_sdk
+
+    defaultConfig {
+        minSdk build_versions.min_sdk
+        targetSdk build_versions.target_sdk
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+        }
+        release {
+            debuggable false
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    implementation("androidx.room:room-runtime:$dep_versions.androidx.room")
+    annotationProcessor("androidx.room:room-compiler:$dep_versions.androidx.room")
+    kapt("androidx.room:room-compiler:$dep_versions.androidx.room")
+    implementation("androidx.room:room-ktx:$dep_versions.androidx.room")
+
+    implementation "io.insert-koin:koin-android:$dep_versions.koin"
+    testImplementation "io.insert-koin:koin-test:$dep_versions.koin"
+    testImplementation "io.insert-koin:koin-test-junit4:$dep_versions.koin"
+
+    testImplementation "junit:junit:$dep_versions.junit"
+    androidTestImplementation "androidx.test.ext:junit:$dep_versions.androidx.junit"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$dep_versions.androidx.espresso"
+}
