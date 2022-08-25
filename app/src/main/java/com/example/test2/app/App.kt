@@ -20,7 +20,7 @@ class App : Application() {
             androidContext(this@App)
             fragmentFactory()
             modules(
-                appModule,
+                fragmentModule,
                 persistanceModule,
                 repositoryModule,
                 viewModelModule,

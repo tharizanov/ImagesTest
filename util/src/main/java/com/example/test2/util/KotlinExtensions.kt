@@ -13,6 +13,20 @@ inline fun <T> T?.ifNull(block: (T?) -> Unit): T? {
     return this
 }
 
+inline fun <T : CharSequence> T.ifNotEmpty(block: (T) -> Unit): T {
+    if (isNotEmpty()) {
+        block(this)
+    }
+    return this
+}
+
+inline fun <T : Collection<Any?>> T.ifNotEmpty(block: (T) -> Unit): T {
+    if (isNotEmpty()) {
+        block(this)
+    }
+    return this
+}
+
 fun RecyclerView.addLinearDividerDecoration(@DrawableRes drawableId: Int) {
     (layoutManager as? LinearLayoutManager)?.let { lm ->
         AppCompatResources.getDrawable(context, drawableId)?.let { drawable ->

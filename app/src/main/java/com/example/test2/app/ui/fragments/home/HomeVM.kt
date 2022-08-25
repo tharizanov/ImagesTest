@@ -7,44 +7,71 @@ import com.example.test2.app.domains.HomeRecyclerItem
 import com.example.test2.app.events.NavigateToDetailsEvent
 import com.example.test2.app.events.NavigationEvent
 import com.example.test2.app.ui.base.BaseViewModel
+import com.example.test2.persistance.database.DatabaseManager
+import com.example.test2.persistance.preferences.PreferencesManager
 import com.example.test2.repository.ImagesRepository
 import com.example.test2.util.SingleLiveEvent
+import com.example.test2.util.ifNotEmpty
 import kotlinx.coroutines.launch
 
 class HomeVM(
     private val repository: ImagesRepository,
+    private val databaseManager: DatabaseManager,
+    private val preferencesManager: PreferencesManager,
     private val domainConvertor: DomainConvertor
 ) : BaseViewModel() {
 
     val event = SingleLiveEvent<NavigationEvent>()
+    val isLoading = MutableLiveData<Boolean>()
+    val items = MutableLiveData<List<HomeRecyclerItem>?>()
     val searchText = MutableLiveData<String?>()
-    val items = MutableLiveData<List<HomeRecyclerItem>?>(null)
-    val isLoading = MutableLiveData(false)
 
     init {
-        // TODO: Restore persisted items
+        loadData()
     }
 
     fun onSearchButtonClick() {
-        if (isLoading.value == true) {
-            return
-        }
-
-        searchText.value?.ifEmpty { null }?.let { keyword ->
-            isLoading.value = true
-
-            viewModelScope.launch {
-                items.postValue(domainConvertor.getRecyclerItemsFromResponse(repository.getApiResponse(keyword)))
-                isLoading.postValue(false)
-
-                // TODO: Persist items
-            }
+        searchText.value?.ifNotEmpty {
+            loadData(it)
+            preferencesManager.storeLastSearch(it)
         }
     }
 
     fun onItemClick(item: HomeRecyclerItem) {
         item.link?.let {
             event.value = NavigateToDetailsEvent(it)
+        }
+    }
+
+    fun getLastSavedSearch(): String? = preferencesManager.getLastSearch()
+
+    private fun loadData(searchString: String? = null) {
+        if (isLoading.value == true)
+            return
+
+        isLoading.value = true
+
+        viewModelScope.launch {
+            if (searchString.isNullOrEmpty()) {
+                loadDataFromDatabase()
+            } else {
+                loadDataFromApiRepo(searchString)
+            }
+            isLoading.postValue(false)
+        }
+    }
+
+    private suspend fun loadDataFromDatabase() {
+        databaseManager.getAllItems().ifNotEmpty { dbItems ->
+            items.postValue(domainConvertor.makeRecyclerItemsFromDatabase(dbItems))
+        }
+    }
+
+    private suspend fun loadDataFromApiRepo(searchString: String) {
+        domainConvertor.makeRecyclerItemsFromResponse(repository.getApiResponse(searchString)).ifNotEmpty { uiItems ->
+            items.postValue(uiItems)
+            databaseManager.deleteItems()
+            databaseManager.storeItems(*domainConvertor.makeDatabaseItemsFromRecycler(uiItems).toTypedArray())
         }
     }
 
