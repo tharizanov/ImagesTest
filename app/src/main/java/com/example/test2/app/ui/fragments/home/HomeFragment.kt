@@ -49,6 +49,10 @@ class HomeFragment : BaseFragment<HomeVM>() {
         vm.event.observe(this) { it?.let { event ->
             (activity as? MainActivity)?.onNavigationEvent(event)
         }}
+
+        vm.isLoading.observe(this) {
+            binding?.homeSearchBtn?.isEnabled = !it
+        }
     }
 
     override fun onDestroyView() {

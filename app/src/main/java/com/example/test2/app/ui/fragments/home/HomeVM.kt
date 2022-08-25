@@ -26,6 +26,10 @@ class HomeVM(
     }
 
     fun onSearchButtonClick() {
+        if (isLoading.value == true) {
+            return
+        }
+
         searchText.value?.ifEmpty { null }?.let { keyword ->
             isLoading.value = true
 
