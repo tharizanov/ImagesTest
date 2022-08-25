@@ -38,7 +38,7 @@ class HomeVM(
     }
 
     fun onItemClick(item: HomeRecyclerItem) {
-        item.link?.let {
+        item.link?.ifNotEmpty {
             event.value = NavigateToDetailsEvent(it)
         }
     }

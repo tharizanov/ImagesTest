@@ -5,6 +5,5 @@ data class HomeRecyclerItem(
     val title: String?,
     val link: String?,
     val originalUrl: String?,
-    val thumbnailUrl: String?,
-    val isCreatedFromCache: Boolean = false
+    val thumbnailUrl: String?
 )

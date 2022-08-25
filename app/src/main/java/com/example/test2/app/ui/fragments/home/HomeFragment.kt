@@ -18,9 +18,7 @@ import com.example.test2.util.addLinearDividerDecoration
 import com.example.test2.util.ifNotEmpty
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class HomeFragment(
-    private val recyclerAdapter: HomeRecyclerAdapter
-) : BaseFragment<HomeVM>() {
+class HomeFragment : BaseFragment<HomeVM>() {
 
     private var binding: FragmentHomeBinding? = null
 
@@ -47,7 +45,7 @@ class HomeFragment(
 
     private fun setupViews() = binding?.run {
         homeRecycler.layoutManager = LinearLayoutManager(root.context)
-        homeRecycler.adapter = recyclerAdapter
+        homeRecycler.adapter = HomeRecyclerAdapter(this@HomeFragment.vm)
         homeRecycler.addLinearDividerDecoration(R.drawable.home_recycler_item_divider)
 
         homeSearchInput.addTextChangedListener(object : TextWatcher {
@@ -68,10 +66,6 @@ class HomeFragment(
         vm.event.observe(this) { it?.let { event ->
             (activity as? MainActivity)?.onNavigationEvent(event)
         }}
-
-        vm.isLoading.observe(this) {
-            binding?.homeSearchBtn?.isEnabled = !it
-        }
     }
 
 }

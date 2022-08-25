@@ -13,8 +13,7 @@ class DomainConvertor {
                     title = item.title,
                     link = item.link,
                     originalUrl = item.original,
-                    thumbnailUrl = item.thumbnail,
-                    isCreatedFromCache = false
+                    thumbnailUrl = item.thumbnail
                 ))
             }
         }
@@ -27,8 +26,7 @@ class DomainConvertor {
                     title = item.title,
                     link = item.link,
                     originalUrl = item.originalUrl,
-                    thumbnailUrl = item.thumbnailUrl,
-                    isCreatedFromCache = true
+                    thumbnailUrl = item.thumbnailUrl
                 ))
             }
         }
