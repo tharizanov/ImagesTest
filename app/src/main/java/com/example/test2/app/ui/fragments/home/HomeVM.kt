@@ -37,7 +37,7 @@ class HomeVM(
         }
     }
 
-    fun onItemClick(item: HomeRecyclerItem) {
+    fun onRecyclerItemClick(item: HomeRecyclerItem) {
         item.link?.ifNotEmpty {
             event.value = NavigateToDetailsEvent(it)
         }
@@ -45,9 +45,15 @@ class HomeVM(
 
     fun getLastSavedSearch(): String? = preferencesManager.getLastSearch()
 
+    /**
+     * if [searchString] is null or empty, load the data from the database.
+     * Otherwise use the [searchString] to make a request to the API repo.
+     */
     private fun loadData(searchString: String? = null) {
-        if (isLoading.value == true)
+        if (isLoading.value == true) {
+            // Data is already being loaded, no need to proceed.
             return
+        }
 
         isLoading.value = true
 

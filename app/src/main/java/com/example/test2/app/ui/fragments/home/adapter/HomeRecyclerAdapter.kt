@@ -22,6 +22,7 @@ class HomeRecyclerAdapter(private val vm: HomeVM) : RecyclerView.Adapter<HomeRec
     override fun getItemCount(): Int = itemsList.size
 
     fun setItems(items: List<HomeRecyclerItem>?) {
+        // To set the new items, delete the old ones first (if present).
         itemCount.let {
             if (it > 0) {
                 itemsList.clear()
@@ -29,6 +30,7 @@ class HomeRecyclerAdapter(private val vm: HomeVM) : RecyclerView.Adapter<HomeRec
             }
         }
 
+        // Now insert the new list of items.
         if (items != null && items.isNotEmpty()) {
             EzLog.d("Set ${items.size} items")
             itemsList.addAll(items)

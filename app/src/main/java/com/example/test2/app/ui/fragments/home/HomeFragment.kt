@@ -35,7 +35,7 @@ class HomeFragment : BaseFragment<HomeVM>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupViews()
-        setupObservers()
+        addLiveDataObservers()
     }
 
     override fun onDestroyView() {
@@ -43,11 +43,16 @@ class HomeFragment : BaseFragment<HomeVM>() {
         super.onDestroyView()
     }
 
+    /**
+     * Perform initial setup for the views bound to this Fragment.
+     */
     private fun setupViews() = binding?.run {
+        // Setup the RecyclerView.
         homeRecycler.layoutManager = LinearLayoutManager(root.context)
         homeRecycler.adapter = HomeRecyclerAdapter(this@HomeFragment.vm)
         homeRecycler.addLinearDividerDecoration(R.drawable.home_recycler_item_divider)
 
+        // Keep track of the search input so that the LiveData can correctly reflect the input.
         homeSearchInput.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -56,13 +61,14 @@ class HomeFragment : BaseFragment<HomeVM>() {
             }
         })
 
+        // Display the last search keyword typed by the user into the input field.
         this@HomeFragment.vm.getLastSavedSearch()?.ifNotEmpty {
             homeSearchInput.text = SpannableStringBuilder(it)
         }
     }
 
     @SuppressLint("FragmentLiveDataObserve")
-    private fun setupObservers() {
+    private fun addLiveDataObservers() {
         vm.event.observe(this) { it?.let { event ->
             (activity as? MainActivity)?.onNavigationEvent(event)
         }}

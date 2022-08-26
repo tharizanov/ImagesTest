@@ -2,8 +2,8 @@ package com.example.test2.app
 
 import android.app.Application
 import com.example.test2.app.di.*
-import com.example.test2.persistance.di.persistanceModule
-import com.example.test2.repository.di.repositoryModule
+import com.example.test2.persistance.di.*
+import com.example.test2.repository.di.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.fragment.koin.fragmentFactory

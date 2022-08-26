@@ -19,11 +19,11 @@ class MainActivity : AppCompatActivity() {
 
     fun onNavigationEvent(event: NavigationEvent) {
         when (event) {
-            is NavigateToDetailsEvent -> navigateToDetails(event.link)
+            is NavigateToDetailsEvent -> navigateToDetailsFragment(event.link)
         }
     }
 
-    private fun navigateToDetails(link: String) {
+    private fun navigateToDetailsFragment(link: String) {
         supportFragmentManager.beginTransaction()
             .addToBackStack(null)
             .replace<DetailsFragment>(

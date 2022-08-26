@@ -9,6 +9,9 @@ import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
 import com.example.test2.app.databinding.FragmentDetailsBinding
 
+/**
+ * [Fragment] displaying the details of an item from the home screen.
+ */
 class DetailsFragment : Fragment() {
 
     companion object {
@@ -23,6 +26,7 @@ class DetailsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        // Perform initial setup on the WebView and immediately load the URL from the arguments.
         binding?.detailsWebview?.let { webview ->
             setupWebView(webview)
             arguments?.getString(ARGS_KEY_LINK)?.let { link ->
@@ -48,6 +52,7 @@ class DetailsFragment : Fragment() {
             loadsImagesAutomatically = true
             javaScriptEnabled = true
         }
+
         webView.scrollBarStyle = View.SCROLLBARS_INSIDE_OVERLAY
     }
 

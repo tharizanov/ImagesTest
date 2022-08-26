@@ -5,6 +5,9 @@ import android.view.View
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 
+/**
+ * Base [Fragment] class to be inherited by Fragments coupled with an extension of [BaseViewModel].
+ */
 abstract class BaseFragment<VM : BaseViewModel> : Fragment() {
 
     protected abstract val vm: VM
