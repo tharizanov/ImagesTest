@@ -1,5 +1,6 @@
 # Welcome to my Images Test App
 ##### (an implementation of SerpApi's Google Search API)
+#----------------------------------------------------------------------------------------------------
 
 ### 1. The concept:
 
