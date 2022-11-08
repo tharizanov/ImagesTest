@@ -6,6 +6,8 @@ plugins {
 }
 
 android {
+    namespace 'com.example.test2.util'
+
     compileSdk build_versions.compile_sdk
 
     defaultConfig {
