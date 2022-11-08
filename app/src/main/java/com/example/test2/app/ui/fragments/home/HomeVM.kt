@@ -11,7 +11,7 @@ import com.example.test2.persistance.database.DatabaseManager
 import com.example.test2.persistance.preferences.PreferencesManager
 import com.example.test2.repository.ImagesRepository
 import com.example.test2.util.SingleLiveEvent
-import com.example.test2.util.ifNotEmpty
+import com.example.test2.util.extensions.ifNotEmpty
 import kotlinx.coroutines.launch
 
 class HomeVM(

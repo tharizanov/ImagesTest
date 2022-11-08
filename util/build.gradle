@@ -39,6 +39,8 @@ android {
 }
 
 dependencies {
+    implementation "androidx.navigation:navigation-fragment-ktx:$dep_versions.androidx.navigation"
+
     implementation "com.google.android.material:material:$dep_versions.material"
 
     implementation "io.insert-koin:koin-android:$dep_versions.koin"

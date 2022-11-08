@@ -14,8 +14,8 @@ import com.example.test2.app.databinding.FragmentHomeBinding
 import com.example.test2.app.ui.activities.MainActivity
 import com.example.test2.app.ui.fragments.home.adapter.HomeRecyclerAdapter
 import com.example.test2.app.ui.base.BaseFragment
-import com.example.test2.util.addLinearDividerDecoration
-import com.example.test2.util.ifNotEmpty
+import com.example.test2.util.extensions.addLinearDividerDecoration
+import com.example.test2.util.extensions.ifNotEmpty
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeFragment : BaseFragment<HomeVM>() {
