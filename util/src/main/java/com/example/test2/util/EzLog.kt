@@ -13,11 +13,28 @@ object EzLog {
 
     private val TAG = javaClass.simpleName
 
+    private var separator = DEFAULT_MESSAGE_SEPARATOR
+    private var includeFullStackTrace = false
+
     /**
-     * If TRUE, the log will contain the whole stacktrace leading to this call, otherwise just the message.
+     * Add customisations only to the next log message. Customisations will be reset after the log.
+     *
+     * @param separator The separator to split the log message parts.
+     * @param fullStackTrace If TRUE - the log will contain the whole stack trace leading to this call.
+     *                       If FALSE - only the last stack trace.
+     * @return The same logger object.
      */
     @JvmStatic
-    var includeFullStackTrace = false
+    fun with(separator: String = DEFAULT_MESSAGE_SEPARATOR, fullStackTrace: Boolean = false): EzLog {
+        if (BuildConfig.DEBUG) {
+            if (this.separator != separator)
+                this.separator = separator
+
+            if (fullStackTrace)
+                includeFullStackTrace = true
+        }
+        return this
+    }
 
     /**
      * VERBOSE level log.
@@ -25,21 +42,9 @@ object EzLog {
      * @param objects Objects used to build the log message.
      */
     @JvmStatic
-    fun v(vararg objects: Any?) {
+    fun verbose(vararg objects: Any?) {
         if (BuildConfig.DEBUG)
             Log.v(TAG, buildMessage(objects))
-    }
-
-    /**
-     * VERBOSE level log, using a custom separator.
-     *
-     * @param separator The separator to split the specified objects.
-     * @param objects Objects used to build the log message.
-     */
-    @JvmStatic
-    fun v_(separator: String, vararg objects: Any?) {
-        if (BuildConfig.DEBUG)
-            Log.v(TAG, buildMessage(objects, separator))
     }
 
     /**
@@ -48,21 +53,9 @@ object EzLog {
      * @param objects Objects used to build the log message.
      */
     @JvmStatic
-    fun d(vararg objects: Any?) {
+    fun debug(vararg objects: Any?) {
         if (BuildConfig.DEBUG)
             Log.d(TAG, buildMessage(objects))
-    }
-
-    /**
-     * DEBUG level log, using a custom separator.
-     *
-     * @param separator The separator to split the specified objects.
-     * @param objects Objects used to build the log message.
-     */
-    @JvmStatic
-    fun d_(separator: String, vararg objects: Any?) {
-        if (BuildConfig.DEBUG)
-            Log.d(TAG, buildMessage(objects, separator))
     }
 
     /**
@@ -71,21 +64,9 @@ object EzLog {
      * @param objects Objects used to build the log message.
      */
     @JvmStatic
-    fun i(vararg objects: Any?) {
+    fun info(vararg objects: Any?) {
         if (BuildConfig.DEBUG)
             Log.i(TAG, buildMessage(objects))
-    }
-
-    /**
-     * INFO level log, using a custom separator.
-     *
-     * @param separator The separator to split the specified objects.
-     * @param objects Objects used to build the log message.
-     */
-    @JvmStatic
-    fun i_(separator: String, vararg objects: Any?) {
-        if (BuildConfig.DEBUG)
-            Log.i(TAG, buildMessage(objects, separator))
     }
 
     /**
@@ -94,21 +75,9 @@ object EzLog {
      * @param objects Objects used to build the log message.
      */
     @JvmStatic
-    fun w(vararg objects: Any?) {
+    fun warning(vararg objects: Any?) {
         if (BuildConfig.DEBUG)
             Log.w(TAG, buildMessage(objects))
-    }
-
-    /**
-     * WARNING level log, using a custom separator.
-     *
-     * @param separator The separator to split the specified objects.
-     * @param objects Objects used to build the log message.
-     */
-    @JvmStatic
-    fun w_(separator: String, vararg objects: Any?) {
-        if (BuildConfig.DEBUG)
-            Log.w(TAG, buildMessage(objects, separator))
     }
 
     /**
@@ -117,21 +86,9 @@ object EzLog {
      * @param objects Objects used to build the log message.
      */
     @JvmStatic
-    fun e(vararg objects: Any?) {
+    fun error(vararg objects: Any?) {
         if (BuildConfig.DEBUG)
             Log.e(TAG, buildMessage(objects))
-    }
-
-    /**
-     * ERROR level log, using a custom separator.
-     *
-     * @param separator The separator to split the specified objects.
-     * @param objects Objects used to build the log message.
-     */
-    @JvmStatic
-    fun e_(separator: String, vararg objects: Any?) {
-        if (BuildConfig.DEBUG)
-            Log.e(TAG, buildMessage(objects, separator))
     }
 
     /**
@@ -140,21 +97,9 @@ object EzLog {
      * @param objects Objects used to build the log message.
      */
     @JvmStatic
-    fun wtf(vararg objects: Any?) {
+    fun assert(vararg objects: Any?) {
         if (BuildConfig.DEBUG)
             Log.wtf(TAG, buildMessage(objects))
-    }
-
-    /**
-     * ASSERT level log, using a custom separator.
-     *
-     * @param separator The separator to split the specified objects.
-     * @param objects Objects used to build the log message.
-     */
-    @JvmStatic
-    fun wtf_(separator: String, vararg objects: Any?) {
-        if (BuildConfig.DEBUG)
-            Log.wtf(TAG, buildMessage(objects, separator))
     }
 
 
@@ -163,54 +108,50 @@ object EzLog {
 
     /**
      * @param messageParts Objects to be fused into a readable log message.
-     * @param separator The separator to split the message parts.
-     * @param elements Array of [StackTraceElement]s.
-     * @param isFullStackTrace See [includeFullStackTrace].
      * @return The message to display in the log.
      */
-    private fun buildMessage(
-        messageParts: Array<out Any?>,
-        separator: String = DEFAULT_MESSAGE_SEPARATOR,
-        elements: Array<StackTraceElement> = Thread.currentThread().stackTrace,
-        isFullStackTrace: Boolean = includeFullStackTrace
-    ): String {
+    private fun buildMessage(messageParts: Array<out Any?>): String =
+        StringBuilder()
+            .appendMessageParts(messageParts)
+            .appendStackTrace()
+            .toString()
+
+    private fun StringBuilder.appendMessageParts(messageParts: Array<out Any?>): StringBuilder =
+        when (messageParts.size) {
+            0 -> append(EMPTY_MESSAGE)
+            1 -> append(nonEmptyMessage(messageParts[0]))
+            else -> {
+                append(nonEmptyMessage(messageParts[0]))
+                for (i in 1 until messageParts.size) {
+                    append(separator).append(nonEmptyMessage(messageParts[i]))
+                }
+                if (separator != DEFAULT_MESSAGE_SEPARATOR) {
+                    separator = DEFAULT_MESSAGE_SEPARATOR
+                }
+                this@appendMessageParts
+            }
+        }
+
+    private fun StringBuilder.appendStackTrace(): StringBuilder {
+        val elements = Thread.currentThread().stackTrace
         findCallingFunctionStackIndex(elements)
-
-        return StringBuilder().apply {
-            // Append all message parts
-            when (messageParts.size) {
-                0 -> append(EMPTY_MESSAGE)
-                1 -> append(nonEmptyMsg(messageParts[0]))
-                else -> {
-                    append(nonEmptyMsg(messageParts[0]))
-                    for (i in 1 until messageParts.size)
-                        append(separator).append(nonEmptyMsg(messageParts[i]))
-                }
+        when {
+            callingFunctionStackIndex < 0 -> {}
+            includeFullStackTrace -> {
+                includeFullStackTrace = false
+                for (i in callingFunctionStackIndex until elements.size)
+                    append("\n").append(stackTraceName(elements[i]))
             }
-
-            // Now append the stack trace
-            when {
-                callingFunctionStackIndex < 0 -> {}
-                isFullStackTrace -> {
-                    for (i in callingFunctionStackIndex until elements.size)
-                        append("\n").append(steNameForMessage(elements[i]))
-                }
-                else -> append("\n").append(steNameForMessage(elements[callingFunctionStackIndex]))
-            }
-        }.toString()
+            else -> append("\n").append(stackTraceName(elements[callingFunctionStackIndex]))
+        }
+        return this@appendStackTrace
     }
-
-    private fun nonEmptyMsg(obj: Any?): String =
-        obj.toString().ifEmpty { EMPTY_MESSAGE }
-
-    private fun steNameForMessage(ste: StackTraceElement): String =
-        "at ${ste.className}.${ste.methodName}()"
 
     private fun findCallingFunctionStackIndex(elements: Array<StackTraceElement>) {
         if (callingFunctionStackIndex >= 0)
             return
 
-        val thisClassName = javaClass.name
+        val thisClassName = this@EzLog.javaClass.name
         elements.forEachIndexed { index, stackTraceElement ->
             if (thisClassName == stackTraceElement.className) {
                 callingFunctionStackIndex = index + 1
@@ -218,5 +159,11 @@ object EzLog {
             }
         }
     }
+
+    private fun nonEmptyMessage(obj: Any?): String =
+        obj.toString().trim().ifEmpty { EMPTY_MESSAGE }
+
+    private fun stackTraceName(ste: StackTraceElement): String =
+        "at ${ste.className}.${ste.methodName}()"
 
 }
