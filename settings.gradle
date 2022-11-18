@@ -14,8 +14,8 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Test 2"
+rootProject.name = "Images Test"
 include ':app'
+include ':network'
 include ':persistance'
-include ':repository'
 include ':util'

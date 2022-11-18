@@ -7,9 +7,9 @@ import com.example.test2.app.domains.HomeRecyclerItem
 import com.example.test2.app.events.NavigateToDetailsEvent
 import com.example.test2.app.events.NavigationEvent
 import com.example.test2.app.ui.base.BaseViewModel
+import com.example.test2.network.ImagesRepository
 import com.example.test2.persistance.database.DatabaseManager
 import com.example.test2.persistance.preferences.PreferencesManager
-import com.example.test2.repository.ImagesRepository
 import com.example.test2.util.SingleLiveEvent
 import com.example.test2.util.extensions.ifNotEmpty
 import kotlinx.coroutines.launch

@@ -32,7 +32,7 @@ class HomeRecyclerAdapter(private val vm: HomeVM) : RecyclerView.Adapter<HomeRec
 
         // Now insert the new list of items.
         if (items != null && items.isNotEmpty()) {
-            EzLog.d("Set ${items.size} items")
+            EzLog.debug("Set ${items.size} items")
             itemsList.addAll(items)
             notifyItemRangeInserted(0, items.size)
         }

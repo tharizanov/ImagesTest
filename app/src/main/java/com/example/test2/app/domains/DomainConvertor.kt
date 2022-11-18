@@ -1,7 +1,7 @@
 package com.example.test2.app.domains
 
+import com.example.test2.network.domain.ApiResponse
 import com.example.test2.persistance.database.ImageItem
-import com.example.test2.repository.domains.ApiResponse
 
 /**
  * Singleton class responsible for converting domains from different layers of the application.
