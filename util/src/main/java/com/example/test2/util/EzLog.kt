@@ -10,31 +10,44 @@ object EzLog {
 
     private const val EMPTY_MESSAGE = "_"
     private const val DEFAULT_MESSAGE_SEPARATOR = ", "
+    private const val ERROR_CODE = -1
 
     private val TAG = javaClass.simpleName
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////// CUSTOMISATIONS SECTION /////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private var separator = DEFAULT_MESSAGE_SEPARATOR
     private var includeFullStackTrace = false
 
     /**
-     * Add customisations only to the next log message. Customisations will be reset after the log.
-     *
-     * @param separator The separator to split the log message parts.
-     * @param fullStackTrace If TRUE - the log will contain the whole stack trace leading to this call.
-     *                       If FALSE - only the last stack trace.
-     * @return The same logger object.
+     * Print the full stack trace for the next log message only.
      */
     @JvmStatic
-    fun with(separator: String = DEFAULT_MESSAGE_SEPARATOR, fullStackTrace: Boolean = false): EzLog {
+    fun fullStackTrace(): EzLog {
         if (BuildConfig.DEBUG) {
-            if (this.separator != separator)
-                this.separator = separator
-
-            if (fullStackTrace)
-                includeFullStackTrace = true
+            includeFullStackTrace = true
         }
         return this
     }
+
+    /**
+     * Print the next log message (only) using a custom separator between the objects.
+     */
+    @JvmStatic
+    fun separator(separator: String): EzLog {
+        if (BuildConfig.DEBUG && this.separator != separator) {
+            this.separator = separator
+        }
+        return this
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////// LOGS SECTION ////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * VERBOSE level log.
@@ -104,8 +117,6 @@ object EzLog {
 
 
 
-    private var callingFunctionStackIndex = -1
-
     /**
      * @param messageParts Objects to be fused into a readable log message.
      * @return The message to display in the log.
@@ -116,52 +127,70 @@ object EzLog {
             .appendStackTrace()
             .toString()
 
-    private fun StringBuilder.appendMessageParts(messageParts: Array<out Any?>): StringBuilder =
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////// MESSAGE PARTS SECTION /////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    private fun StringBuilder.appendMessageParts(messageParts: Array<out Any?>): StringBuilder {
         when (messageParts.size) {
             0 -> append(EMPTY_MESSAGE)
             1 -> append(nonEmptyMessage(messageParts[0]))
             else -> {
                 append(nonEmptyMessage(messageParts[0]))
-                for (i in 1 until messageParts.size) {
+                for (i in 1 until messageParts.size)
                     append(separator).append(nonEmptyMessage(messageParts[i]))
-                }
-                if (separator != DEFAULT_MESSAGE_SEPARATOR) {
-                    separator = DEFAULT_MESSAGE_SEPARATOR
-                }
-                this@appendMessageParts
             }
         }
 
+        if (separator != DEFAULT_MESSAGE_SEPARATOR)
+            separator = DEFAULT_MESSAGE_SEPARATOR
+
+        return this@appendMessageParts
+    }
+
+    private fun nonEmptyMessage(obj: Any?): String =
+        obj.toString().trim().ifEmpty { EMPTY_MESSAGE }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////// STACK TRACE SECTION //////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    private var callingFunctionStackIndex = ERROR_CODE
+
     private fun StringBuilder.appendStackTrace(): StringBuilder {
         val elements = Thread.currentThread().stackTrace
-        findCallingFunctionStackIndex(elements)
+
         when {
-            callingFunctionStackIndex < 0 -> {}
+            findCallingFunctionStackIndex(elements).not() -> {}
             includeFullStackTrace -> {
-                includeFullStackTrace = false
                 for (i in callingFunctionStackIndex until elements.size)
                     append("\n").append(stackTraceName(elements[i]))
             }
             else -> append("\n").append(stackTraceName(elements[callingFunctionStackIndex]))
         }
+
+        if (includeFullStackTrace)
+            includeFullStackTrace = false
+
         return this@appendStackTrace
     }
 
-    private fun findCallingFunctionStackIndex(elements: Array<StackTraceElement>) {
-        if (callingFunctionStackIndex >= 0)
-            return
+    private fun findCallingFunctionStackIndex(elements: Array<StackTraceElement>): Boolean {
+        if (callingFunctionStackIndex != ERROR_CODE)
+            return true
 
         val thisClassName = this@EzLog.javaClass.name
         elements.forEachIndexed { index, stackTraceElement ->
             if (thisClassName == stackTraceElement.className) {
                 callingFunctionStackIndex = index + 1
-                return@forEachIndexed
+                return true
             }
         }
-    }
 
-    private fun nonEmptyMessage(obj: Any?): String =
-        obj.toString().trim().ifEmpty { EMPTY_MESSAGE }
+        return false
+    }
 
     private fun stackTraceName(ste: StackTraceElement): String =
         "at ${ste.className}.${ste.methodName}()"
