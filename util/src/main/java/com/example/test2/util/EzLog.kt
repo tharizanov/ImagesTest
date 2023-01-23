@@ -8,8 +8,8 @@ import android.util.Log
 @Suppress("unused")
 object EzLog {
 
-    private const val EMPTY_MESSAGE = "_"
     private const val DEFAULT_MESSAGE_SEPARATOR = ", "
+    private const val EMPTY_MESSAGE_SUBSTITUTE = "_"
     private const val ERROR_CODE = -1
 
     private val TAG = javaClass.simpleName
@@ -121,7 +121,7 @@ object EzLog {
      * @param messageParts Objects to be fused into a readable log message.
      * @return The message to display in the log.
      */
-    private fun buildMessage(messageParts: Array<out Any?>): String =
+    private fun buildMessage(messageParts: Array<out Any?>?): String =
         StringBuilder()
             .appendMessageParts(messageParts)
             .appendStackTrace()
@@ -132,15 +132,14 @@ object EzLog {
     //////////////// MESSAGE PARTS SECTION /////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    private fun StringBuilder.appendMessageParts(messageParts: Array<out Any?>): StringBuilder {
-        when (messageParts.size) {
-            0 -> append(EMPTY_MESSAGE)
-            1 -> append(nonEmptyMessage(messageParts[0]))
-            else -> {
-                append(nonEmptyMessage(messageParts[0]))
+    private fun StringBuilder.appendMessageParts(messageParts: Array<out Any?>?): StringBuilder {
+        if (messageParts.isNullOrEmpty()) {
+            append(EMPTY_MESSAGE_SUBSTITUTE)
+        } else {
+            appendNonEmpty(messageParts[0])
+            if (messageParts.size > 1)
                 for (i in 1 until messageParts.size)
-                    append(separator).append(nonEmptyMessage(messageParts[i]))
-            }
+                    append(separator).appendNonEmpty(messageParts[i])
         }
 
         if (separator != DEFAULT_MESSAGE_SEPARATOR)
@@ -149,8 +148,16 @@ object EzLog {
         return this@appendMessageParts
     }
 
-    private fun nonEmptyMessage(obj: Any?): String =
-        obj.toString().trim().ifEmpty { EMPTY_MESSAGE }
+    private fun StringBuilder.appendNonEmpty(obj: Any?): StringBuilder {
+        if (obj is Throwable) {
+            append("\n${obj::class.simpleName ?: "Unnamed class"}: ${obj.message}\n")
+            for (ste in obj.stackTrace)
+                append(stackTraceName(ste)).append("\n")
+        } else {
+            append(obj.toString().trim().ifEmpty { EMPTY_MESSAGE_SUBSTITUTE })
+        }
+        return this@appendNonEmpty
+    }
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -163,7 +170,7 @@ object EzLog {
         val elements = Thread.currentThread().stackTrace
 
         when {
-            findCallingFunctionStackIndex(elements).not() -> {}
+            findCallingFunctionStackIndex(elements).not() -> {} // Do nothing.
             includeFullStackTrace -> {
                 for (i in callingFunctionStackIndex until elements.size)
                     append("\n").append(stackTraceName(elements[i]))
