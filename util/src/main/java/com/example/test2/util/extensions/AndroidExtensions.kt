@@ -3,9 +3,12 @@ package com.example.test2.util.extensions
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.res.Resources
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -13,6 +16,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
+import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
@@ -35,6 +39,20 @@ fun Context.getColorCompat(@ColorRes colorResId: Int): Int =
 
 fun Context.getDrawableCompat(@DrawableRes resId: Int): Drawable? =
     AppCompatResources.getDrawable(this, resId)
+
+fun Context.getFloat(@DimenRes resId: Int): Float {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        return resources.getFloat(resId)
+    }
+
+    val value = TypedValue()
+    resources.getValue(resId, value, true)
+    if (value.type != TypedValue.TYPE_FLOAT) {
+        throw Resources.NotFoundException("Resource is not of type Float")
+    }
+
+    return value.float
+}
 
 fun Context.showToast(@StringRes messageRes: Int, length: Int = Toast.LENGTH_SHORT) =
     showToast(getString(messageRes), length)
