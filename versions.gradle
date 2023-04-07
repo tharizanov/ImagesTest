@@ -2,8 +2,11 @@ def build_versions = [:]
 build_versions.compile_sdk = 33
 build_versions.min_sdk = 23
 build_versions.target_sdk = 33
-
 ext.build_versions = build_versions
+
+def plugin_versions = [:]
+plugin_versions.kotlin = '1.7.10'
+ext.plugin_versions = plugin_versions
 
 // Dependency versions
 def dep_versions = [:]

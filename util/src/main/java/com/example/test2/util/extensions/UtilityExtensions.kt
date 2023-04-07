@@ -2,6 +2,7 @@ package com.example.test2.util.extensions
 
 import java.io.Closeable
 import java.io.IOException
+import kotlin.reflect.full.declaredMemberProperties
 
 fun Closeable.closeQuietly() = try { close() } catch (_: IOException) {}
 
@@ -29,3 +30,9 @@ inline fun <T : Any> T?.ifNull(action: () -> Unit): T? {
     if (this == null) action()
     return this
 }
+
+fun Any.propertiesMap(): Map<String, Any?> =
+    javaClass.kotlin.declaredMemberProperties.associate { it.name to it.get(this) }
+
+fun Map<*,*>.toReadableString(separator: CharSequence = ", "): String =
+    entries.joinToString(separator) { "${it.key}=${it.value}" }

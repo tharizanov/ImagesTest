@@ -53,6 +53,8 @@ dependencies {
     testImplementation "io.insert-koin:koin-test:$dep_versions.koin"
     testImplementation "io.insert-koin:koin-test-junit4:$dep_versions.koin"
 
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$plugin_versions.kotlin"
+
     testImplementation "junit:junit:$dep_versions.junit"
     androidTestImplementation "androidx.test.ext:junit:$dep_versions.androidx.junit"
     androidTestImplementation "androidx.test.espresso:espresso-core:$dep_versions.androidx.espresso"
